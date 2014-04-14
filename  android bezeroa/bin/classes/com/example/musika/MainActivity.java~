@@ -1,0 +1,230 @@
+package com.example.musika;
+
+/*
+ * This is a simple Android mobile client
+ * This application read any string messege typed on the text field and 
+ * send it to the server when the Send button is pressed
+ * Author by Lak J Comspace
+ */
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+
+import android.os.StrictMode;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+	private Socket client;
+	private PrintWriter printwriter;
+	private EditText textField;
+	private Button konektaBotoi;
+	private Button bilatuBotoi;
+	private Button listaBotoi;
+	private Button itxiBotoi;
+	public String message="";
+    private VideosListView listView;
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		if (android.os.Build.VERSION.SDK_INT > 9) { 
+			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+			StrictMode.setThreadPolicy(policy); 
+			}
+		textField = (EditText) findViewById(R.id.editText1); // reference to the
+	    listView = (VideosListView) findViewById(R.id.videosListView);
+	    		// text field
+		konektaBotoi = (Button) findViewById(R.id.buttonKO);
+		// Button press event listener
+		konektaBotoi.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+
+				message = textField.getText().toString(); // get the text
+															// message on the
+															// text field
+				textField.setText(""); // Reset the text field to blank
+
+				try {
+
+					client = new Socket("utolosa.no-ip.biz", 4444); // connect to server
+					printwriter = new PrintWriter(client.getOutputStream(),
+							true);
+					 if(message.compareTo("firefox")==0){
+						 printwriter.write(message);
+					 }else{
+						 printwriter.write("kaixo");
+					}
+					
+					printwriter.flush();
+					printwriter.close();
+					client.close(); // closing the connection
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+//		bilatuBotoi = (Button) findViewById(R.id.buttonBI);
+//		// Button press event listener
+//		bilatuBotoi.setOnClickListener(new View.OnClickListener() {
+//
+//			public void onClick(View v) {
+//
+//				message = textField.getText().toString(); // get the text
+//															// message on the
+//															// text field
+//				textField.setText(""); // Reset the text field to blank
+//
+//				try {
+//
+//					client = new Socket("utolosa.no-ip.biz", 4444); // connect to server
+//					printwriter = new PrintWriter(client.getOutputStream(),
+//							true);
+//				
+//					printwriter.flush();
+//					printwriter.close();
+//					client.close(); // closing the connection
+//				} catch (UnknownHostException e) {
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+		listaBotoi = (Button) findViewById(R.id.buttonLI);
+		// Button press event listener
+		listaBotoi.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+
+				message = textField.getText().toString();
+				textField.setText("");
+				try {
+
+					client = new Socket("utolosa.no-ip.biz", 4444); // connect to server
+					printwriter = new PrintWriter(client.getOutputStream(),
+							true);
+					printwriter.write("getlista");
+					printwriter.flush();
+					printwriter.close();
+					client.close(); // closing the connection
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		itxiBotoi = (Button) findViewById(R.id.buttonEX);
+		// Button press event listener
+		itxiBotoi.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				
+				try {
+
+					client = new Socket("utolosa.no-ip.biz", 4444); // connect to server
+					printwriter = new PrintWriter(client.getOutputStream(),
+							true);
+					printwriter.write("exit");
+					printwriter.flush();
+					printwriter.close();
+					client.close(); // closing the connection
+				} catch (UnknownHostException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+	}
+
+//    // This is the XML onClick listener to retreive a users video feed
+//    public void getUserYouTubeFeed(View v){
+//        // We start a new task that does its work on its own thread
+//        // We pass in a handler that will be called when the task has finished
+//        // We also pass in the name of the user we are searching YouTube for
+//        new Thread(new GetYouTubeUserVideosTask(responseHandler, "utols")).start();
+//    }
+//    
+//    // This is the handler that receives the response when the YouTube task has finished
+//    Handler responseHandler = new Handler() {
+//        public void handleMessage(Message msg) {
+//            populateListWithVideos(msg);
+//        };
+//    };   
+    
+    public void getYouTubeSearch(View v){
+        // We start a new task that does its work on its own thread
+        // We pass in a handler that will be called when the task has finished
+        // We also pass in the name of the user we are searching YouTube for
+    	if (MainActivity.this.textField.getText().toString().compareTo("")!=0){
+        new Thread(new GetYouTubeUserVideosTask(response2Handler, MainActivity.this.textField.getText().toString())).start();
+        }else{
+        	
+        }
+    }
+    
+    // This is the handler that receives the response when the YouTube task has finished
+    Handler response2Handler = new Handler() {
+        public void handleMessage(Message msg) {
+            populateListWithVideos(msg);
+        };
+    };
+ 
+    /**
+     * This method retrieves the Library of videos from the task and passes them to our ListView
+     * @param msg
+     */
+    private void populateListWithVideos(Message msg) {
+        // Retreive the videos are task found from the data bundle sent back
+        Library lib = (Library) msg.getData().get(GetYouTubeUserVideosTask.LIBRARY);
+        // Because we have created a custom ListView we don't have to worry about setting the adapter in the activity
+        // we can just call our custom method with the list of items we want to display
+        listView.setVideos(lib.getVideos());
+        listView.setOnItemClickListener(new OnItemClickListener() 
+        	{
+        	    @Override
+        	    public void onItemClick(AdapterView<?> a, View v,int position, long id) 
+        	    {
+        	    	Video v1 =(Video)listView.getItemAtPosition(position);  
+        	        Toast.makeText(getBaseContext(), "Click"+v1.getUrl(), Toast.LENGTH_LONG).show();
+        			try {
+    					client = new Socket("utolosa.no-ip.biz", 4444); // connect to server
+    					printwriter = new PrintWriter(client.getOutputStream(),true);
+    					printwriter.write(v1.getUrl());
+    					printwriter.flush();
+    					printwriter.close();
+    					client.close(); // closing the connection
+    				} catch (UnknownHostException e) {
+    					e.printStackTrace();
+    				} catch (IOException e) {
+    					e.printStackTrace();
+    				}
+        	    }
+        	});
+    }
+     
+    @Override
+    protected void onStop() {
+        // Make sure we null our handler when the activity has stopped
+        // because who cares if we get a callback once the activity has stopped? not me!
+        response2Handler = null;
+        super.onStop();
+    }
+}

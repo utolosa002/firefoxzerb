@@ -1,0 +1,73 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/hello_world"
+                android:textStyle="bold"
+                android:typeface="sans" />
+
+            <EditText
+                android:id="@+id/editText1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10" >
+
+                <requestFocus />
+            </EditText>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="getYouTubeSearch"
+                android:text="Bilatu" />
+
+            <Button
+                android:id="@+id/buttonKO"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Konektatu" />
+
+            <Button
+                android:id="@+id/buttonLI"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ListaLortu" />
+
+            <Button
+                android:id="@+id/buttonEX"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Zerb.exit" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <com.example.musika.VideosListView
+                android:id="@+id/videosListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </com.example.musika.VideosListView>
+
+        </LinearLayout>
+
+</LinearLayout>
